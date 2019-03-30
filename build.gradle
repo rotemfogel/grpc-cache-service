@@ -1,0 +1,73 @@
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+
+buildscript {
+    repositories {
+        maven {
+            // The google mirror is less flaky than mavenCentral()
+            url "https://maven-central.storage-download.googleapis.com/repos/central/data/"
+        }
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.6'
+    }
+}
+
+repositories {
+    maven {
+        url "https://maven-central.storage-download.googleapis.com/repos/central/data/"
+    }
+    mavenLocal()
+}
+
+def grpcVersion = '1.13.2'
+
+dependencies {
+    compile "io.grpc:grpc-netty:${grpcVersion}"
+    compile "io.grpc:grpc-protobuf:${grpcVersion}"
+    compile "io.grpc:grpc-stub:${grpcVersion}"
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+
+    testCompile "io.grpc:grpc-testing:${grpcVersion}"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.25.1"
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.6.0'
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+// Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'me.rotemfo.grpc.cache.service.App'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+apply plugin: 'idea'

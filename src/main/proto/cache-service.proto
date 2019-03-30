@@ -1,0 +1,44 @@
+syntax = "proto3";
+package me.rotemfo.grpc.cache.service;
+option java_outer_classname = "CacheServiceProtos";
+option optimize_for = CODE_SIZE;
+
+service CacheService {
+    rpc set (SetRequest) returns (SetResponse);
+    rpc get (GetRequest) returns (GetResponse);
+    rpc reset (ResetRequest) returns (ResetResponse);
+    rpc getByKeyPattern (GetByKeyPatternRequest) returns (stream GetByKeyPatternResponse);
+}
+
+message GetByKeyPatternRequest {
+    string pattern = 1;
+}
+
+message GetByKeyPatternResponse {
+    string key = 1;
+    bytes value = 2;
+}
+
+message SetRequest {
+    string key = 1;
+    bytes value = 2;
+}
+
+message SetResponse {
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    string key = 1;
+    bytes value = 2;
+}
+
+message ResetRequest {
+}
+
+message ResetResponse {
+    bool reset = 1;
+}
