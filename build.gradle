@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'application'
 
 buildscript {
     repositories {
@@ -9,7 +10,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.6'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
     }
 }
 
@@ -20,7 +21,7 @@ repositories {
     mavenLocal()
 }
 
-def grpcVersion = '1.13.2'
+def grpcVersion = '1.20.0'
 
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
@@ -62,7 +63,7 @@ sourceSets {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'me.rotemfo.grpc.cache.service.App'
+        attributes 'Main-Class': 'me.rotemfo.grpc.cache.server.App'
     }
 
     from {
@@ -70,4 +71,15 @@ jar {
     }
 }
 
+task client(type:JavaExec) {
+    main = 'me.rotemfo.grpc.cache.client.App'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task server(type:JavaExec) {
+    main = 'me.rotemfo.grpc.cache.server.App'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 apply plugin: 'idea'
+
